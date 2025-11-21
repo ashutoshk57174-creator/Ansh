@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Coching Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+  body{
+    min-height:100vh;
+    background:radial-gradient(circle at 50% 0%, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:16px;
+  }
+
+  .container{
+    width:100%;
+    max-width:420px;
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.6);
+    position:relative;
+    overflow:hidden;
+  }
+
+  h1{
+    font-size:2rem;
+    text-align:center;
+    font-weight:600;
+    margin-bottom:16px;
+    color:#00ffd0;
+    letter-spacing:0.5px;
+    font-family: 'dancing script',cursive;
+  }
+
+  label{
+    font-size:0.9rem;
+    margin-top:8px;
+    display:block;
+    opacity:0.9;
+  }
+
+  input{
+    width:100%;
+    padding:10px;
+    margin-top:6px;
+    border:none;
+    border-radius:10px;
+    background:rgba(255,255,255,0.1);
+    color:#fff;
+    outline:none;
+  }
+
+  input::placeholder{color:rgba(255,255,255,0.5)}
+
+  button{
+    width:100%;
+    margin-top:14px;
+    padding:11px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(90deg,#00c6ff,#0072ff);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .25s ease;
+  }
+  button:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,0.4);}
+
+  .search-box{
+    margin-top:18px;
+    display:flex;
+    gap:8px;
+  }
+  .search-box input{flex:1;}
+  .search-box button{flex-shrink:0;width:auto;padding:10px 16px;}
+
+  table{
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+    font-size:0.9rem;
+    overflow-x:auto;
+    display:block;
+  }
+  th,td{
+    padding:8px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    text-align:left;
+    white-space:nowrap;
+  }
+  th{color:#00ffd0;}
+  tr:hover{background:rgba(255,255,255,0.05);}
+
+  .actions button{
+    padding:4px 8px;
+    font-size:0.8rem;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .edit{background:#009dff;color:#fff;}
+  .del{background:#ff3b3b;color:#fff;margin-left:5px;}
+
+  .msg{
+    margin-top:10px;
+    text-align:center;
+    font-weight:600;
+    padding:6px;
+    border-radius:8px;
+  }
+  .success{color:#00ffad;}
+  .error{color:#ff5b5b;}
+
+  .loading{
+    position:absolute;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:rgba(0,0,0,0.6);
+    border-radius:16px;
+    visibility:hidden;
+    z-index:10;
+  }
+  .spinner{
+    width:50px;height:50px;
+    border:5px solid rgba(255,255,255,0.2);
+    border-top-color:#00ffd0;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* Edit Page */
+  .edit-page{
+    position:absolute;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.8);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    visibility:hidden;
+    opacity:0;
+    transition:0.3s;
+  }
+  .edit-page.active{
+    visibility:visible;
+    opacity:1;
+  }
+  .edit-box{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(12px);
+    border-radius:16px;
+    padding:20px;
+    width:100%;
+    max-width:350px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.5);
+  }
+  .edit-box h2{text-align:center;color:#00ffd0;margin-bottom:14px;}
+  .edit-box input{margin-bottom:10px;}
+  .btns{display:flex;gap:10px;margin-top:10px;}
+  .btns button{flex:1;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="loading" id="loading"><div class="spinner"></div></div>
+  <h1>My Coching Registration</h1>
+
+  <label>Full Name</label>
+  <input id="name" placeholder="Enter student name" />
+
+  <label>Email</label>
+  <input id="email" placeholder="Enter student email" />
+
+  <label>Phone</label>
+  <input id="phone" placeholder="Enter phone number" />
+
+  <label>Address</label>
+  <input id="address" placeholder="Enter address" />
+
+  <button id="addBtn">Register Student</button>
+
+  <div class="search-box">
+    <input id="searchInput" placeholder="Search by ID or name" />
+    <button id="searchBtn">Search</button>
+  </div>
+
+  <div id="msgBox"></div>
+
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Name</th><th>Email</th><th>Actions</th></tr>
+    </thead>
+    <tbody id="studentsBody"><tr><td colspan="4" style="text-align:center;">Loading...</td></tr></tbody>
+  </table>
+
+  <!-- Edit Profile Page -->
+  <div class="edit-page" id="editPage">
+    <div class="edit-box">
+      <h2>Edit Student</h2>
+      <input id="editId" disabled />
+      <input id="editName" placeholder="Full Name" />
+      <input id="editEmail" placeholder="Email" />
+      <input id="editPhone" placeholder="Phone" />
+      <input id="editAddress" placeholder="Address" />
+      <div class="btns">
+        <button id="confirmEdit" style="background:#00c6ff;">Confirm</button>
+        <button id="cancelEdit" style="background:#ff3b3b;">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BACKEND = "https://script.google.com/macros/s/AKfycbzdOYhV5ebK9otdTa5iiv_y8xT2oNfRFHG_Sd9fAtGSjC9v9tM80D-bvhfrHoa0iM5cNQ/exec";
+const $ = id => document.getElementById(id);
+function setLoading(v){$('loading').style.visibility=v?'visible':'hidden';}
+function showMsg(t, type='success'){
+  $('msgBox').innerHTML=`<div class="msg ${type}">${t}</div>`;
+  setTimeout(()=>{$('msgBox').innerHTML=''},3000);
+}
+
+async function fetchAll(){
+  setLoading(true);
+  try{
+    const r=await fetch(BACKEND+'?action=getAll');
+    const j=await r.json();
+    if(j.status==='success')renderTable(j.data);
+  }catch(e){showMsg('Error loading','error')}
+  setLoading(false);
+}
+function renderTable(d){
+  const html=d.map(x=>`
+  <tr>
+    <td>${x.id}</td>
+    <td>${x.name}</td>
+    <td>${x.email}</td>
+    <td>
+      <button class="edit" onclick="openEdit('${x.id}','${x.name}','${x.email}','${x.phone}','${x.address}')">Edit</button>
+      <button class="del" onclick="deleteRecord('${x.id}')">Del</button>
+    </td>
+  </tr>`).join('');
+  $('studentsBody').innerHTML=html||'<tr><td colspan="4" style="text-align:center;">No data</td></tr>';
+}
+
+$('addBtn').onclick=async()=>{
+  const name=$('name').value.trim(),email=$('email').value.trim(),phone=$('phone').value.trim(),address=$('address').value.trim();
+  if(!name||!email||!phone||!address)return showMsg('Fill all fields','error');
+  setLoading(true);
+  try{
+    const res=await fetch(BACKEND,{method:'POST',body:JSON.stringify({action:'add',name,email,phone,address})});
+    const j=await res.json();
+    if(j.status==='success'){showMsg('Added ✅');$('name').value=$('email').value=$('phone').value=$('address').value='';fetchAll();}
+    else showMsg('Add failed','error');
+  }catch(e){showMsg('Server error','error');}
+  setLoading(false);
+};
+
+$('searchBtn').onclick=async()=>{
+  const q=$('searchInput').value.trim();if(!q)return showMsg('Enter search','error');
+  setLoading(true);
+  try{
+    const r=await fetch(BACKEND+`?action=search&id=${encodeURIComponent(q)}`);
+    const j=await r.json();
+    if(j.status==='success'&&j.data){
+      $('studentsBody').innerHTML=`<tr><td>${j.data.id}</td><td>${j.data.name}</td><td>${j.data.email}</td>
+      <td><button class="edit" onclick="openEdit('${j.data.id}','${j.data.name}','${j.data.email}','${j.data.phone}','${j.data.address}')">Edit</button>
+      <button class="del" onclick="deleteRecord('${j.data.id}')">Del</button></td></tr>`;
+    }else showMsg('Not found','error');
+  }catch(e){showMsg('Search error','error')}
+  setLoading(false);
+};
+
+function openEdit(id,name,email,phone,address){
+  $('editPage').classList.add('active');
+  $('editId').value=id;
+  $('editName').value=name;
+  $('editEmail').value=email;
+  $('editPhone').value=phone;
+  $('editAddress').value=address;
+}
+
+$('cancelEdit').onclick=()=>$('editPage').classList.remove('active');
+
+$('confirmEdit').onclick=async()=>{
+  const id=$('editId').value;
+  const name=$('editName').value.trim();
+  const email=$('editEmail').value.trim();
+  const phone=$('editPhone').value.trim();
+  const address=$('editAddress').value.trim();
+  if(!confirm("Confirm edit changes?"))return;
+  setLoading(true);
+  try{
+    const res=await fetch(BACKEND,{method:'POST',body:JSON.stringify({action:'edit',id,name,email,phone,address})});
+    const j=await res.json();
+    if(j.status==='success'){showMsg('Updated ✅');$('editPage').classList.remove('active');fetchAll();}
+  }catch(e){showMsg('Edit error','error');}
+  setLoading(false);
+};
+
+async function deleteRecord(id){
+  if(!confirm('Delete '+id+'?'))return;
+  setLoading(true);
+  try{
+    const res=await fetch(BACKEND,{method:'POST',body:JSON.stringify({action:'delete',id})});
+    const j=await res.json();
+    if(j.status==='success'){showMsg('Deleted 🗑️');fetchAll();}
+  }catch(e){showMsg('Delete error','error');}
+  setLoading(false);
+}
+
+fetchAll();
+</script>
+</body>
+</html>
